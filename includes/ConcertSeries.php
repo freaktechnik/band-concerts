@@ -128,15 +128,14 @@ class BC_ConcertSeries {
         $ids = BC_Concert::getCurrentParents(self::TAXONOMY);
 
         $q = new WP_Query([
-            'post__in' => $ids
+            'post_type' => self::POST_TYPE,
+            'post__in' => $ids,
+            'nopaging'
         ]);
-        $posts = [];
-        while($q->have_posts()) {
-            $q->the_post();
-            $posts[] = get_post();
+        if($q->have_posts()) {
+            return $q->get_posts();
         }
-        wp_reset_postdata();
-        return $posts;
+        return [];
     }
 
     public static function getConcertsForSeries($post_id): array {

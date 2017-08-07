@@ -61,8 +61,7 @@ class BC_Concert {
         );
     }
 
-    private static function getPosts($taxonomy_name, $post_id): array {
-        //TODO doesn't work
+    public static function getPosts($taxonomy_name, $post_id): array {
         $postsQuery = new WP_Query([
             'post_type' => self::POST_TYPE,
             'post_status' => [
@@ -81,6 +80,8 @@ class BC_Concert {
                     'terms' => strval($post_id)
                 ]
             ],
+            'orderby' => 'date',
+            'order' => 'ASC',
             'nopaging' => true
         ]);
         $posts = [];
@@ -192,15 +193,15 @@ class BC_Concert {
                 'after' => 'today'
             ]
         ]);
-        $posts = [];
-        while($postsQuery->have_posts()) {
-            $postsQuery->the_post();
-            $terms = get_the_terms();
-            if(!in_array($terms[$taxonomy_name]->name, $posts)) {
-                $posts[] = $terms[$taxonomy_name]->name;
+        $ps = [];
+        if($postsQuery->have_posts()) {
+            foreach($postsQuery->get_posts() as $p) {
+                $terms = get_the_terms($p, $taxonomy_name);
+                if(!in_array($terms[0]->name, $ps)) {
+                    $ps[] = intval($terms[0]->name);
+                }
             }
         }
-        wp_reset_postdata();
-        return $posts;
+        return $ps;
     }
 }
