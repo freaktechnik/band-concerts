@@ -86,7 +86,6 @@ class BC_ConcertSeries {
             'public' => false,
             'show_in_nav_menus' => false,
             'hierarchical' => false,
-            'meta_box_cb' => 'post_categories_meta_box',
             'capabilites' => [
                 'manage_terms',
                 'edit_terms',
@@ -125,10 +124,12 @@ class BC_ConcertSeries {
             return $postID;
         }
 
-        $data = wp_kses_post($_POST[self::REVIEW_FIELD_EDITOR]);
-        update_post_meta($postID, self::REVIEW_FIELD, $data);
+        if(get_post_type($postID) == self::POST_TYPE) {
+            $data = wp_kses_post($_POST[self::REVIEW_FIELD_EDITOR]);
+            update_post_meta($postID, self::REVIEW_FIELD, $data);
 
-        BC_Concert::saveBox($postID, self::TAXONOMY);
+            BC_Concert::saveBox($postID, self::TAXONOMY);
+        }
     }
 
     public static function getCurrentItems(): array {
@@ -144,5 +145,9 @@ class BC_ConcertSeries {
         }
         wp_reset_postdata();
         return $posts;
+    }
+
+    public static function getConcertsForSeries($post_id): array {
+        return BC_Concert::getPosts(self::TAXONOMY, $post_id);
     }
 }

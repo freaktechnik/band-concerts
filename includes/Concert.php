@@ -47,9 +47,6 @@ class BC_Concert {
             ],
             'public' => false,
             'show_in_nav_menus' => false,
-            'supports' => [
-                'revisions'
-            ],
             'has_archive' => false
         ]);
     }
@@ -67,7 +64,8 @@ class BC_Concert {
         );
     }
 
-    private static function getPosts($taxonomy_name, $post_id) {
+    private static function getPosts($taxonomy_name, $post_id): array {
+        //TODO doesn't work
         $postsQuery = new WP_Query([
             'post_type' => self::POST_TYPE,
             'tax_query' => [
@@ -138,41 +136,45 @@ class BC_Concert {
             return $postID;
         }
 
-        $removedPosts = explode(',', sanitize_text_field($_POST['bc_removed_concerts']));
-        if(!empty($removedPosts)) {
+        $removedPostsRaw = sanitize_text_field($_POST['bc_removed_concerts']);
+        if(!empty($removedPostsRaw)) {
+            $removedPosts = explode(',', $removedPostsRaw);
             foreach($removedPosts as $removedID) {
                 wp_delete_post($removedID, true);
             }
         }
 
-        $concerts = explode(',', sanitize_text_field($_POST['bc_concerts_ids']));
+        $concertIDs = sanitize_text_field($_POST['bc_concerts_ids']);
+        if(!empty($concertIDs)) {
+            $concerts = explode(',', $concertIDs);
+            foreach($concerts as $i) {
+                $concert_id = 'bc_concert'.$i.'_';
 
-        foreach($concerts as $i) {
-            $concert_id = 'bc_concert'.$i.'_';
+                $date = sanitize_text_field($_POST[$concert_id.'date']);
+                $location = sanitize_text_field($_POST[$concert_id.'location']);
+                $fee = intval($_POST[$concert_id.'fee']);
 
-            $date = sanitize_text_field($_POST[$concert_id.'date']);
-            $location = sanitize_text_field($_POST[$concert_id.'location']);
-            $fee = intval($_POST[$concert_id.'fee']);
+                //TODO ensure date matches the pattern
 
-            //TODO ensure date matches the pattern
+                $props = [
+                    'post_type' => self::POST_TYPE,
+                    'tax_input' => [],
+                    'meta_input' => [],
+                    'post_date' => $date,
+                    'post_date_gmt' => get_gmt_from_date($date),
+                    'post_name' => sanitize_title($post_id.$date.$location.$fee)
+                ];
 
-            $props = [
-                'post_type' => self::POST_TYPE,
-                'tax_input' => [],
-                'meta_input' => [],
-                'post_date' => $date,
-                'post_date_gmt' => get_gmt_from_date($date)
-            ];
+                $props['tax_input'][$taxonomy_name] = $post_id;
+                $props['meta_input'][self::LOCATION_FIELD] = $location;
+                $props['meta_input'][self::FEE_FIELD] = $fee;
 
-            $props['tax_input'][$taxonomy_name] = $post_id;
-            $props['meta_input'][self::LOCATION_FIELD] = $location;
-            $props['meta_input'][self::FEE_FIELD] = $fee;
-
-            if(isset($_POST[$concert_id.'id'])) {
-                $concert_post_id = sanitize_text_field($_POST[$concert_id.'id']);
-                $props['ID'] = $concert_post_id;
+                if(isset($_POST[$concert_id.'id'])) {
+                    $concert_post_id = sanitize_text_field($_POST[$concert_id.'id']);
+                    $props['ID'] = $concert_post_id;
+                }
+                wp_insert_post($props);
             }
-            wp_insert_post($props);
         }
     }
 
