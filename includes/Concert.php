@@ -2,7 +2,6 @@
 /**
  * @var string
  */
-$text_domain = 'band-concerts';
 
 class BC_Concert {
     /**
@@ -39,11 +38,10 @@ class BC_Concert {
     const SCRIPT = 'bc_concerts_box_script';
 
     public static function register() {
-        global $text_domain;
         register_post_type(self::POST_TYPE, [
             'labels' => [
-                'name' => __('Konzerte', $text_domain),
-                'singular_name' => __('Konzert', $text_domain)
+                'name' => __('Konzerte', BC_TEXT_DOMAIN),
+                'singular_name' => __('Konzert', BC_TEXT_DOMAIN)
             ],
             'public' => false,
             'show_in_nav_menus' => false,
@@ -52,10 +50,9 @@ class BC_Concert {
     }
 
     public static function addBox(string $post_type, string $taxonomy_name) {
-        global $text_domain;
         add_meta_box(
             self::BOX,
-            __('Auftritte', $text_domain),
+            __('Auftritte', BC_TEXT_DOMAIN),
             [self::class, 'renderBox'],
             $post_type,
             'advanced',
@@ -68,39 +65,47 @@ class BC_Concert {
         //TODO doesn't work
         $postsQuery = new WP_Query([
             'post_type' => self::POST_TYPE,
+            'post_status' => [
+                'any',
+                'future',
+                'draft',
+                'auto-draft',
+                'private',
+                'pending',
+                'publish'
+            ],
             'tax_query' => [
                 [
                     'taxonomy' => $taxonomy_name,
-                    'field' => 'name',
-                    'terms' => $post_id
+                    'field' => 'slug',
+                    'terms' => strval($post_id)
                 ]
-            ]
+            ],
+            'nopaging' => true
         ]);
         $posts = [];
-        while($postsQuery->have_posts()) {
-            $postsQuery->the_post();
-            $id = get_the_ID();
-            $posts[] = [
-                'id' => esc_attr($id),
-                'date' => esc_attr(get_post_meta($id, self::DATE_FIELD, true)),
-                'location' => esc_attr(get_post_meta($id, self::LOCATION_FIELD, true)),
-                'fee' => esc_attr(get_post_meta($id, self::FEE_FIELD, true))
-            ];
+        if($postsQuery->have_posts()) {
+            foreach($postsQuery->get_posts() as $p) {
+                $posts[] = [
+                    'id' => esc_attr($p->ID),
+                    'date' => esc_attr($p->post_date),
+                    'location' => esc_attr(get_post_meta($p->ID, self::LOCATION_FIELD, true)),
+                    'fee' => esc_attr(get_post_meta($p->ID, self::FEE_FIELD, true))
+                ];
+            }
         }
-        wp_reset_postdata();
 
         return $posts;
     }
 
     public static function renderBox($post, array $opts) {
-        global $text_domain;
-        $taxonomy_name = $opts[0];
+        $taxonomy_name = $opts['args'][0];
         wp_nonce_field(self::NONCE_FIELD, self::NONCE_NAME);
 
         $posts = self::getPosts($taxonomy_name, $post->ID);
         $postIDs = [];
         ?>
-        <button id="bc_add_concert" class="button"><?php _e('Auftritt hinzufügen', $text_domain) ?></button>
+        <button id="bc_add_concert" class="button"><?php _e('Auftritt hinzufügen', BC_TEXT_DOMAIN) ?></button>
         <input type="hidden" value="" name="bc_removed_concerts" id="bc_removed_concerts">
         <input type="hidden" value="<?php echo count($posts) ?>" name="bc_concerts_count" id="bc_concerts_count">
         <ul id="bc_concerts_list">
@@ -112,13 +117,13 @@ class BC_Concert {
             <li id="bc_concert_<?php echo $i ?>">
                 <input class="bc_concert_id" name="<?php echo $concert_id ?>id" value="<?php echo $concert['id'] ?>" type="hidden">
                 <p>
-                    <label><?php _e('Datum', $text_domain) ?> <input type="text" name="<?php echo $concert_id ?>date" class="bc_concert_date" value="<?php echo $concert['date'] ?>"></label>
+                    <label><?php _e('Datum', BC_TEXT_DOMAIN) ?> <input type="text" name="<?php echo $concert_id ?>date" class="bc_concert_date" value="<?php echo $concert['date'] ?>"></label>
                 </p>
                 <p>
-                    <label><?php _e('Ort', $text_domain) ?> <input type="text" name="<?php echo $concert_id ?>location" value="<?php echo $concert['location'] ?>"></label>
+                    <label><?php _e('Ort', BC_TEXT_DOMAIN) ?> <input type="text" name="<?php echo $concert_id ?>location" value="<?php echo $concert['location'] ?>"></label>
                 </p>
                 <p>
-                    <label><?php _e('Eintritt', $text_domain) ?> <input type="number" min="0" step="1" name="<?php echo $concert_id ?>fee" value="<?php echo $concert['fee'] ?>">CHF</label>
+                    <label><?php _e('Eintritt', BC_TEXT_DOMAIN) ?> <input type="number" min="0" step="1" name="<?php echo $concert_id ?>fee" value="<?php echo $concert['fee'] ?>">CHF</label>
                 </p>
                 <button class="bc_remove_concert button"><?php _e('Auftritt entferenen') ?></button>
             </li>
@@ -126,7 +131,7 @@ class BC_Concert {
             }
             ?>
         </ul>
-        <input type="hidden" value="<?php implode(',', $postIDs) ?>" name="bc_concerts_ids" id="bc_concerts_ids">
+        <input type="hidden" value="<?php echo implode(',', $postIDs) ?>" name="bc_concerts_ids" id="bc_concerts_ids">
         <?php
         wp_enqueue_script(self::SCRIPT);
     }
@@ -145,7 +150,7 @@ class BC_Concert {
         }
 
         $concertIDs = sanitize_text_field($_POST['bc_concerts_ids']);
-        if(!empty($concertIDs)) {
+        if(strlen($concertIDs) > 0) {
             $concerts = explode(',', $concertIDs);
             foreach($concerts as $i) {
                 $concert_id = 'bc_concert'.$i.'_';
@@ -165,7 +170,7 @@ class BC_Concert {
                     'post_name' => sanitize_title($post_id.$date.$location.$fee)
                 ];
 
-                $props['tax_input'][$taxonomy_name] = $post_id;
+                $props['tax_input'][$taxonomy_name] = strval($post_id);
                 $props['meta_input'][self::LOCATION_FIELD] = $location;
                 $props['meta_input'][self::FEE_FIELD] = $fee;
 
@@ -181,8 +186,10 @@ class BC_Concert {
     public static function getCurrentParents(string $taxonomy_name): array {
         $postsQuery = new WP_Query([
             'post_type' => self::POST_TYPE,
+            'post_status' => 'any',
+            'nopaging' => true,
             'date_query' => [
-                'after' => '-1 day'
+                'after' => 'today'
             ]
         ]);
         $posts = [];

@@ -9,6 +9,11 @@ License: MIT
 Text-Domain: band-concerts
 */
 
+/**
+ * @var string
+ */
+define("BC_TEXT_DOMAIN", "band-concerts");
+
 require("includes/ConcertSeries.php");
 
 //TODO newsletter
@@ -16,11 +21,6 @@ require("includes/ConcertSeries.php");
 //TODO easy way to get concerts to series
 
 class BandConcertPlugin {
-    /**
-     * @var string
-     */
-    const TEXT_DOMAIN = "band-concerts";
-
     public function __construct() {
         $this->registerHooks();
     }

@@ -1,11 +1,6 @@
 <?php
 require("Concert.php");
 
-/**
- * @var string
- */
-$text_domain = 'band-concerts';
-
 class BC_ConcertSeries {
     /**
      * @var string
@@ -38,28 +33,27 @@ class BC_ConcertSeries {
     }
 
     private static function registerPostType() {
-        global $text_domain;
         register_post_type(self::POST_TYPE, [
             'labels' => [
-                'name' => __('Konzertserien', $text_domain),
-                'singular_name' => __('Konzertserie', $text_domain),
-                'archives' => __('Konzertberichte', $text_domain),
-                'featured_image' => __('Begleitbild', $text_domain),
-                'add_new_item' => __('Konzertserie erstellen', $text_domain),
-                'new_item' => __('Neue Konzertserie', $text_domain),
-                'edit_item' => __('Konzertserie bearbeiten', $text_domain),
-                'view_item' => __('Konzertserie anzeigen', $text_domain),
-                'all_items' => __('Alle Konzertserien', $text_domain),
-                'search_items' => __('Konzertserie suchen', $text_domain),
-                'not_found' => __('Keine Konzertserien gefunden', $text_domain),
-                'not_found_in_trash' => __('Keine Konzertserien im Papierkorb', $text_domain),
-                'set_featured_image' => __('Begleitbild wählen', $text_domain),
-                'remove_featured_image' => __('Begleitbild entfernen', $text_domain),
-                'use_featured_image' => __('Als Begleitbild wählen', $text_domain),
-                'items_list' => __('Konzertserienliste', $text_domain),
-                'items_list_navigation' => __('Konzertserienlistennavigation', $text_domain),
-                'menu_name' => __('Konzertserien', $text_domain),
-                'name_admin_bar' => __('Konzertserie', $text_domain)
+                'name' => __('Konzertserien', BC_TEXT_DOMAIN),
+                'singular_name' => __('Konzertserie', BC_TEXT_DOMAIN),
+                'archives' => __('Konzertberichte', BC_TEXT_DOMAIN),
+                'featured_image' => __('Begleitbild', BC_TEXT_DOMAIN),
+                'add_new_item' => __('Konzertserie erstellen', BC_TEXT_DOMAIN),
+                'new_item' => __('Neue Konzertserie', BC_TEXT_DOMAIN),
+                'edit_item' => __('Konzertserie bearbeiten', BC_TEXT_DOMAIN),
+                'view_item' => __('Konzertserie anzeigen', BC_TEXT_DOMAIN),
+                'all_items' => __('Alle Konzertserien', BC_TEXT_DOMAIN),
+                'search_items' => __('Konzertserie suchen', BC_TEXT_DOMAIN),
+                'not_found' => __('Keine Konzertserien gefunden', BC_TEXT_DOMAIN),
+                'not_found_in_trash' => __('Keine Konzertserien im Papierkorb', BC_TEXT_DOMAIN),
+                'set_featured_image' => __('Begleitbild wählen', BC_TEXT_DOMAIN),
+                'remove_featured_image' => __('Begleitbild entfernen', BC_TEXT_DOMAIN),
+                'use_featured_image' => __('Als Begleitbild wählen', BC_TEXT_DOMAIN),
+                'items_list' => __('Konzertserienliste', BC_TEXT_DOMAIN),
+                'items_list_navigation' => __('Konzertserienlistennavigation', BC_TEXT_DOMAIN),
+                'menu_name' => __('Konzertserien', BC_TEXT_DOMAIN),
+                'name_admin_bar' => __('Konzertserie', BC_TEXT_DOMAIN)
             ],
             'public' => true,
             'show_in_nav_menus' => false,
@@ -77,11 +71,10 @@ class BC_ConcertSeries {
     }
 
     private static function registerTaxonomy() {
-        global $text_domain;
         register_taxonomy(self::TAXONOMY, BC_Concert::POST_TYPE, [
             'labels' => [
-                'name' => __('Konzert Serien', $text_domain),
-                'singular_name' => __('Konzert Serie', $text_domain)
+                'name' => __('Konzert Serien', BC_TEXT_DOMAIN),
+                'singular_name' => __('Konzert Serie', BC_TEXT_DOMAIN)
             ],
             'public' => false,
             'show_in_nav_menus' => false,
@@ -98,11 +91,10 @@ class BC_ConcertSeries {
     }
 
     public static function addBox(string $post_type) {
-        global $text_domain;
         if(self::POST_TYPE === $post_type) {
             add_meta_box(
                 self::REVIEW_FIELD,
-                __('Konzertbericht', $text_domain),
+                __('Konzertbericht', BC_TEXT_DOMAIN),
                 [self::class, 'renderBox'],
                 self::POST_TYPE
             );
