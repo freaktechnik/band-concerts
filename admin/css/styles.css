@@ -1,0 +1,33 @@
+.bc_concert {
+    border-bottom: 1px solid #cccccc;
+    padding-bottom: 1em;
+    display: flex;
+}
+
+.bc_concert div {
+    flex-grow: 1;
+    margin-right: 0.8em;
+}
+
+.bc_concert_row {
+    width: 100%;
+    text-align: right;
+}
+
+.bc_concert_row input {
+    float: right;
+    width: 90%;
+    margin-left: 1em;
+}
+
+.wp-core-ui .bc_concert .button {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+}
+
+.bc_concert .dashicon {
+    flex-grow: 1;
+}

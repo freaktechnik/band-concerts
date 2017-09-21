@@ -40,8 +40,11 @@
         var input2 = document.createElement("input");
         var input3 = document.createElement("input");
         var button = document.createElement("button");
+        var span = document.createElement("span");
+        var wrapper = document.createElement("div");
 
         li.id = "bc_concert_" + currentNumber;
+        li.className = "bc_concert";
 
         label1.appendChild(document.createTextNode("Datum "));
         input1.type = "text";
@@ -52,31 +55,35 @@
             dateFormat: "yy-mm-dd"
         });
         label1.appendChild(input1);
+        p1.className = "bc_concert_row";
         p1.appendChild(label1);
-        li.appendChild(p1);
+        wrapper.appendChild(p1);
 
         label2.appendChild(document.createTextNode("Ort "));
         input2.type = "text";
         input2.name = concert_id + "location";
         label2.appendChild(input2);
+        p2.className = "bc_concert_row";
         p2.appendChild(label2);
-        li.appendChild(p2);
+        wrapper.appendChild(p2);
 
-        label3.appendChild(document.createTextNode("Eintritt "));
+        label3.appendChild(document.createTextNode("Eintritt (CHF)"));
         input3.type = "number";
         input3.min = 0;
         input3.step = 1;
         input3.name = concert_id + "fee";
         label3.appendChild(input3);
-        label3.appendChild(document.createTextNode("CHF"));
+        p3.className = "bc_concert_row fee";
         p3.appendChild(label3);
-        li.appendChild(p3);
+        wrapper.appendChild(p3);
+
+        li.appendChild(wrapper);
 
         button.addEventListener("click", removeListener, false);
-        button.textContent = "Auftritt entfernen";
         button.className = "button";
+        span.className= "dashicons dashicons-trash";
+        button.appendChild(span);
         li.appendChild(button);
-
         list.appendChild(li);
         if(concertIds.value.length) {
             concertIds.value += "," + currentNumber;

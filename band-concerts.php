@@ -67,6 +67,7 @@ class BandConcertPlugin {
         wp_enqueue_style('jquery-ui-timepicker', plugin_dir_url(__FILE__).'admin/css/jquery-ui-timepicker-addon.min.css', [
             'jquery-ui'
         ], "1.6.4", "all");
+        wp_enqueue_style('bc_concert_admin', plugin_dir_url(__FILE__).'admin/css/styles.css', [], "1.0.0", "all");
     }
 
     public static function getCurrentConcerts(): array {

@@ -106,7 +106,6 @@ class BC_Concert {
         $posts = self::getPosts($taxonomy_name, $post->ID);
         $postIDs = [];
         ?>
-        <button id="bc_add_concert" class="button"><?php _e('Auftritt hinzufügen', BC_TEXT_DOMAIN) ?></button>
         <input type="hidden" value="" name="bc_removed_concerts" id="bc_removed_concerts">
         <input type="hidden" value="<?php echo count($posts) ?>" name="bc_concerts_count" id="bc_concerts_count">
         <ul id="bc_concerts_list">
@@ -115,24 +114,27 @@ class BC_Concert {
                 $concert_id = 'bc_concert'.$i.'_';
                 $postIDs[] = $i;
             ?>
-            <li id="bc_concert_<?php echo $i ?>">
-                <input class="bc_concert_id" name="<?php echo $concert_id ?>id" value="<?php echo $concert['id'] ?>" type="hidden">
-                <p>
-                    <label><?php _e('Datum', BC_TEXT_DOMAIN) ?> <input type="text" name="<?php echo $concert_id ?>date" class="bc_concert_date" value="<?php echo $concert['date'] ?>"></label>
-                </p>
-                <p>
-                    <label><?php _e('Ort', BC_TEXT_DOMAIN) ?> <input type="text" name="<?php echo $concert_id ?>location" value="<?php echo $concert['location'] ?>"></label>
-                </p>
-                <p>
-                    <label><?php _e('Eintritt', BC_TEXT_DOMAIN) ?> <input type="number" min="0" step="1" name="<?php echo $concert_id ?>fee" value="<?php echo $concert['fee'] ?>">CHF</label>
-                </p>
-                <button class="bc_remove_concert button"><?php _e('Auftritt entferenen') ?></button>
+            <li id="bc_concert_<?php echo $i ?>" class="bc_concert">
+                <div>
+                    <input class="bc_concert_id" name="<?php echo $concert_id ?>id" value="<?php echo $concert['id'] ?>" type="hidden">
+                    <p class="bc_concert_row">
+                        <label><?php _e('Datum', BC_TEXT_DOMAIN) ?> <input type="text" name="<?php echo $concert_id ?>date" class="bc_concert_date" value="<?php echo $concert['date'] ?>"></label>
+                    </p>
+                    <p class="bc_concert_row">
+                        <label><?php _e('Ort', BC_TEXT_DOMAIN) ?> <input type="text" name="<?php echo $concert_id ?>location" value="<?php echo $concert['location'] ?>"></label>
+                    </p>
+                    <p class="bc_concert_row fee">
+                        <label><?php _e('Eintritt (CHF)', BC_TEXT_DOMAIN) ?> <input type="number" min="0" step="1" name="<?php echo $concert_id ?>fee" value="<?php echo $concert['fee'] ?>"></label>
+                    </p>
+                </div>
+                <button class="bc_remove_concert button"><span class="dashicons dashicons-trash"></span></button>
             </li>
             <?php
             }
             ?>
         </ul>
         <input type="hidden" value="<?php echo implode(',', $postIDs) ?>" name="bc_concerts_ids" id="bc_concerts_ids">
+        <button id="bc_add_concert" class="button"><?php _e('Auftritt hinzufügen', BC_TEXT_DOMAIN) ?></button>
         <?php
         wp_enqueue_script(self::SCRIPT);
     }
