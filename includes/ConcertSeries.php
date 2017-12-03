@@ -49,6 +49,13 @@ class BC_ConcertSeries {
      * @var string
      */
     const NONCE_FIELD = 'bc_review_box';
+    /**
+     * @var string
+     */
+    const TYPE_FIELD = 'bc_type';
+
+    const TYPE_CONCERT = 'concert';
+    const TYPE_EVENT = 'event';
 
     public static function register() {
         self::registerPostType();
@@ -121,6 +128,13 @@ class BC_ConcertSeries {
                 [self::class, 'renderBox'],
                 self::POST_TYPE
             );
+            add_meta_box(
+                self::TYPE_FIELD,
+                __('Konzerttyp', BC_TEXT_DOMAIN),
+                [self::class, 'renderTypeBox'],
+                self::POST_TYPE,
+                'side'
+            );
             BC_Concert::addBox(self::POST_TYPE, self::TAXONOMY);
         }
     }
@@ -128,10 +142,18 @@ class BC_ConcertSeries {
     public static function renderBox($post) {
         wp_nonce_field(self::NONCE_FIELD, self::NONCE_NAME);
 
-        $content = get_post_meta($post->ID, self::REVIEW_FIELD, true);
+        $content = get_post_meta($post->ID, self::REVIEW_FIELD, true) ?? '';
         wp_editor($content, self::REVIEW_FIELD_EDITOR, [
             'drag_drop_upload' => true
         ]);
+    }
+
+    public static function renderTypeBox($post) {
+        $content = get_post_meta($post->ID, self::TYPE_FIELD, true);
+        ?><select name="<?php echo self::TYPE_FIELD ?>" id="<?php echo self::TYPE_FIELD ?>" class="bc_type" value="<?php echo $content ?? 'concert' ?>">
+            <option value="<?php echo self::TYPE_CONCERT ?>"<?php if($content !== self::TYPE_EVENT) echo ' selected'; ?>><?php _e('Konzert', BC_TEXT_DOMAIN) ?></option>
+            <option value="<?php echo self::TYPE_EVENT ?>"<?php if($content === self::TYPE_EVENT) echo ' selected'; ?>><?php _e('Anlass', BC_TEXT_DOMAIN) ?></option>
+        </select><?php
     }
 
     public static function saveBox($postID) {
@@ -142,6 +164,8 @@ class BC_ConcertSeries {
         if(get_post_type($postID) == self::POST_TYPE) {
             $data = wp_kses_post($_POST[self::REVIEW_FIELD_EDITOR]);
             update_post_meta($postID, self::REVIEW_FIELD, $data);
+
+            update_post_meta($postID, self::TYPE_FIELD, $_POST[self::TYPE_FIELD]);
 
             BC_Concert::saveBox($postID, self::TAXONOMY);
         }
@@ -163,5 +187,10 @@ class BC_ConcertSeries {
 
     public static function getConcertsForSeries($post_id): array {
         return BC_Concert::getPosts(self::TAXONOMY, $post_id);
+    }
+
+    public static function isConcert($postID) {
+        $content = get_post_meta($postID, self::TYPE_FIELD, true);
+        return $content !== self::TYPE_EVENT;
     }
 }

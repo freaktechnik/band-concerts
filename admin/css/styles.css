@@ -54,3 +54,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 .bc_concert .dashicon {
     flex-grow: 1;
 }
+
+.bc_type {
+    width: 100%;
+}

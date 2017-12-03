@@ -75,7 +75,10 @@ class BandConcertPlugin {
         BC_ConcertSeries::saveBox($post_id);
     }
 
-    public function onEnqueue() {
+    public function onEnqueue($context) {
+        if($context !== 'post.php') {
+            return;
+        }
         wp_register_script('jquery-ui-timepicker', plugin_dir_url(__FILE__).'admin/js/jquery-ui-timepicker-addon.min.js', [
             'jquery-ui-datepicker',
             'jquery-ui-slider'
@@ -83,9 +86,10 @@ class BandConcertPlugin {
         wp_register_script('jquery-ui-timepicker-i18n', plugin_dir_url(__FILE__).'admin/js/jquery-ui-timepicker-addon-i18n.min.js', [
             'jquery-ui-timepicker'
         ], "1.6.4", false);
-        wp_register_script(BC_Concert::SCRIPT, plugin_dir_url(__FILE__).'admin/js/concerts.js', [
+        wp_enqueue_script(BC_Concert::SCRIPT, plugin_dir_url(__FILE__).'admin/js/concerts.js', [
             'jquery-ui-timepicker-i18n'
-        ], "1.0.1", true);
+        ], "1.0.3", false);
+
         wp_register_style('jquery-ui', plugin_dir_url(__FILE__).'admin/css/jquery-ui.min.css', [], "1.12.1", "all");
         wp_enqueue_style('jquery-ui-timepicker', plugin_dir_url(__FILE__).'admin/css/jquery-ui-timepicker-addon.min.css', [
             'jquery-ui'

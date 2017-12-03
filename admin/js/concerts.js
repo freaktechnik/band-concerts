@@ -21,7 +21,7 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
-(function() {
+jQuery(document).ready(function() {
     var addButton = document.getElementById("bc_add_concert");
     var list = document.getElementById("bc_concerts_list");
     var removedConcerts = document.getElementById("bc_removed_concerts");
@@ -92,7 +92,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
         label3.appendChild(document.createTextNode("Eintritt (CHF)"));
         input3.type = "number";
-        input3.min = 0;
+        input3.min = -1;
         input3.step = 1;
         input3.name = concert_id + "fee";
         label3.appendChild(input3);
@@ -130,4 +130,4 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
         timeFormat: "HH:mm:ss",
         dateFormat: "yy-mm-dd"
     });
-})();
+});
