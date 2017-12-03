@@ -23,6 +23,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
 jQuery(document).ready(function() {
     var addButton = document.getElementById("bc_add_concert");
+    if(!addButton) {
+        return;
+    }
     var list = document.getElementById("bc_concerts_list");
     var removedConcerts = document.getElementById("bc_removed_concerts");
     var concertsCount = document.getElementById("bc_concerts_count");
