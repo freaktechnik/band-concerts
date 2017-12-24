@@ -57,6 +57,10 @@ class BC_ConcertSeries {
     const TYPE_CONCERT = 'concert';
     const TYPE_EVENT = 'event';
 
+    const FLYER_FIELD = 'bc_flyer';
+
+    const SCRIPT = 'bc_series_flyer';
+
     public static function register() {
         self::registerPostType();
         self::registerTaxonomy();
@@ -135,6 +139,13 @@ class BC_ConcertSeries {
                 self::POST_TYPE,
                 'side'
             );
+            add_meta_box(
+                self::FLYER_FIELD,
+                __('Flyer', BC_TEXT_DOMAIN),
+                [self::class, 'renderFlyerBox'],
+                self::POST_TYPE,
+                'side'
+            );
             BC_Concert::addBox(self::POST_TYPE, self::TAXONOMY);
         }
     }
@@ -156,6 +167,29 @@ class BC_ConcertSeries {
         </select><?php
     }
 
+    public static function renderFlyerBox($post) {
+        $iframe = esc_url(get_upload_iframe_src('pdf', $post->ID));
+        $content = get_post_meta($post->ID, self::FLYER_FIELD, true);
+        $contentSrc = wp_get_attachment_thumb_url($content);
+        $hasImage = !empty($contentSrc);
+        ?>
+        <div class="bc-prev-container">
+            <?php if($hasImage) { ?>
+            <img src="<?php echo esc_url($contentSrc) ?>" alt="Flyer" style="max-width:100%;">
+            <?php } ?>
+        </div>
+        <p class="hide-if-no-js">
+            <a class="bc-upload<?php if($hasImage) { echo ' hidden'; } ?>" href="<?php echo $iframe ?>">
+                <?php _e('Flyer hochladen', BC_TEXT_DOMAIN) ?>
+            </a>
+            <a class="bc-delete<?php if(!$hasImage) { echo ' hidden'; } ?>" href="#">
+                <?php _e('Flyer entfernen', BC_TEXT_DOMAIN) ?>
+            </a>
+        </p>
+        <input class="bc-flyer-id" name="bc_flyer_id" type="hidden" value="<?php echo esc_attr($content); ?>" />
+        <?php
+    }
+
     public static function saveBox($postID) {
         if(!isset($_POST[self::NONCE_NAME]) || !wp_verify_nonce($_POST[self::NONCE_NAME], self::NONCE_FIELD)) {
             return $postID;
@@ -166,6 +200,9 @@ class BC_ConcertSeries {
             update_post_meta($postID, self::REVIEW_FIELD, $data);
 
             update_post_meta($postID, self::TYPE_FIELD, $_POST[self::TYPE_FIELD]);
+
+            $content = sanitize_text_field($_POST['bc_flyer_id']);
+            update_post_meta($postID, self::FLYER_FIELD, $content);
 
             BC_Concert::saveBox($postID, self::TAXONOMY);
         }

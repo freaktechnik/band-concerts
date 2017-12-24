@@ -89,6 +89,9 @@ class BandConcertPlugin {
         wp_enqueue_script(BC_Concert::SCRIPT, plugin_dir_url(__FILE__).'admin/js/concerts.js', [
             'jquery-ui-timepicker-i18n'
         ], "1.0.3", false);
+        wp_enqueue_script(BC_ConcertSeries::SCRIPT, plugin_dir_url(__FILE__).'admin/js/concertseries.js', [
+            'jquery'
+        ], '1.0.0', false);
 
         wp_register_style('jquery-ui', plugin_dir_url(__FILE__).'admin/css/jquery-ui.min.css', [], "1.12.1", "all");
         wp_enqueue_style('jquery-ui-timepicker', plugin_dir_url(__FILE__).'admin/css/jquery-ui-timepicker-addon.min.css', [
