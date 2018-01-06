@@ -37,7 +37,7 @@ Text-Domain: band-concerts
  */
 define("BC_TEXT_DOMAIN", "band-concerts");
 
-require("includes/ConcertSeries.php");
+require_once("includes/ConcertSeries.php");
 
 //TODO newsletter
 //TODO make currency configurable
