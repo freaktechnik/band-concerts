@@ -222,6 +222,17 @@ class BC_ConcertSeries {
         return [];
     }
 
+    public static function getAllItems(): array {
+        $q = new WP_Query([
+            'post_type' => self::POST_TYPE,
+            'nopaging' => true
+        ]);
+        if($q->have_posts()) {
+            return $q->get_posts();
+        }
+        return [];
+    }
+
     public static function getConcertsForSeries($post_id): array {
         return BC_Concert::getPosts(self::TAXONOMY, $post_id);
     }

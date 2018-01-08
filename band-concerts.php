@@ -37,7 +37,9 @@ Text-Domain: band-concerts
  */
 define("BC_TEXT_DOMAIN", "band-concerts");
 
-require_once("includes/ConcertSeries.php");
+require_once __DIR__."/includes/ConcertSeries.php";
+require_once __DIR__."/includes/EventICal.php";
+require_once __DIR__."/vendor/autoload.php";
 
 //TODO newsletter
 //TODO make currency configurable
@@ -60,6 +62,7 @@ class BandConcertPlugin {
     public function onInit() {
         BC_Concert::register();
         BC_ConcertSeries::register();
+        BC_EventICal::register([BC_ConcertSeries::class, 'getAllItems']);
     }
 
     public function onLoad() {
@@ -103,6 +106,8 @@ class BandConcertPlugin {
     public static function getCurrentConcerts(): array {
         return BC_ConcertSeries::getCurrentItems();
     }
+
+
 }
 
 new BandConcertPlugin();
