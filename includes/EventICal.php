@@ -14,10 +14,12 @@ class BC_EventICal {
     public static $eventDuration = 'PT90M';
     public static $organizerName = 'MG Mühlethurnen';
     public static $color = '#047983';
+    public static $timezone = "Europe/Zurich";
 
     private $cal;
     private $duration;
     private $organizer;
+    private $tz;
 
     public static function register(callable $getPosts) {
         add_filter('feed_content_type', [self::class, 'onFeedContentType']);
@@ -36,12 +38,14 @@ class BC_EventICal {
     }
 
     public function __construct(array $allPosts) {
+        date_default_timezone_set(self::$timezone);
         $this->cal = new Calendar(get_site_url());
         $this->cal->setCalendarColor(self::$color);
         $this->cal->setName(get_bloginfo('name').' Anlässe');
 
         $this->duration = new DateInterval(self::$eventDuration);
         $this->organizer = new Organizer('MAILTO:events@mgmuehlethurnen.ch', [ 'CN' => self::$organizerName ]);
+        $this->tz = new DateTimeZone(self::$timezone);
 
         foreach($allPosts as $post) {
             $this->addPost($post);
@@ -65,8 +69,8 @@ class BC_EventICal {
             }
             $event = new Event($concert['id']);
 
-            $event->setDtStart(new DateTime($concert['date']));
-            $date = new DateTime($concert['date']);
+            $event->setDtStart(new DateTime($concert['date'], $this->tz));
+            $date = new DateTime($concert['date'], $this->tz);
             $date->add($this->duration);
             $event->setDtEnd($date);
 
@@ -82,12 +86,13 @@ class BC_EventICal {
             $event->setLocation($concert['location']);
             $event->setUrl(get_permalink($post));
 
-            $event->setCreated(new DateTime($post->post_date));
-            $event->setModified(new DateTime($post->post_modified));
+            $event->setCreated(new DateTime($post->post_date, $this->tz));
+            $event->setModified(new DateTime($post->post_modified, $this->tz));
 
             $event->setCategories(self::getCategories($post->ID));
             $event->setOrganizer($this->organizer);
             $event->setStatus(Event::STATUS_CONFIRMED);
+            $event->setTimeTransparency(Event::TIME_TRANSPARENCY_TRANSPARENT);
 
             $this->cal->addComponent($event);
         }
