@@ -55,6 +55,7 @@ class BC_Concert {
      * @var string
      */
     const FEE_FIELD = 'bc_concert_fee';
+    const FBEVENT_FIELD = 'bc_concert_fbevent';
     /**
      * @var string
      */
@@ -115,7 +116,8 @@ class BC_Concert {
                     'parent_id' => $post_id,
                     'date' => esc_attr($p->post_date),
                     'location' => esc_attr(get_post_meta($p->ID, self::LOCATION_FIELD, true)),
-                    'fee' => esc_attr(get_post_meta($p->ID, self::FEE_FIELD, true)) ?? -1
+                    'fee' => esc_attr(get_post_meta($p->ID, self::FEE_FIELD, true)) ?? -1,
+                    'fbevent' => esc_attr(get_post_meta($p->ID, self::FBEVENT_FIELD, true)) ?? ''
                 ];
             }
         }
@@ -149,6 +151,9 @@ class BC_Concert {
                     </p>
                     <p class="bc_concert_row fee">
                         <label><?php _e('Eintritt (CHF)', BC_TEXT_DOMAIN) ?> <input type="number" min="-1" step="1" name="<?php echo $concert_id ?>fee" value="<?php echo $concert['fee'] ?>"></label>
+                    </p>
+                    <p class="bc_concert_row fbevent">
+                        <label><?php _e('Facebook Event', BC_TEXT_DOMAIN) ?> <input type="url" name="<?php echo $concert_id ?>fbevent" value="<?php echo $concert['fbevent'] ?>"></label>
                     </p>
                 </div>
                 <button class="bc_remove_concert button"><span class="dashicons dashicons-trash"></span></button>
@@ -184,6 +189,7 @@ class BC_Concert {
                 $date = sanitize_text_field($_POST[$concert_id.'date']);
                 $location = sanitize_text_field($_POST[$concert_id.'location']);
                 $fee = intval($_POST[$concert_id.'fee']);
+                $fbevent = sanitize_text_field($_POST[$concert_id.'fbevent']);
 
                 //TODO ensure date matches the pattern
 
@@ -199,6 +205,7 @@ class BC_Concert {
                 $props['tax_input'][$taxonomy_name] = strval($post_id);
                 $props['meta_input'][self::LOCATION_FIELD] = $location;
                 $props['meta_input'][self::FEE_FIELD] = $fee;
+                $props['meta_input'][self::FBEVENT_FIELD] = $fbevent;
 
                 if(isset($_POST[$concert_id.'id'])) {
                     $concert_post_id = sanitize_text_field($_POST[$concert_id.'id']);

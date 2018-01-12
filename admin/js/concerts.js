@@ -30,7 +30,7 @@ jQuery(document).ready(function() {
     var removedConcerts = document.getElementById("bc_removed_concerts");
     var concertsCount = document.getElementById("bc_concerts_count");
     var concertIds = document.getElementById("bc_concerts_ids");
-    var currentNumber = parseInt(concertsCount.value, 10);
+    var currentNumber = concertsCount.valueAsNumber;
     var removeListener = function(e) {
         e.preventDefault();
         var parent = e.target.parentNode;
@@ -59,12 +59,15 @@ jQuery(document).ready(function() {
         var p1 = document.createElement("p");
         var p2 = document.createElement("p");
         var p3 = document.createElement("p");
+        var p4 = document.createElement("p");
         var label1 = document.createElement("label");
         var label2 = document.createElement("label");
         var label3 = document.createElement("label");
+        var label4 = document.createElement("label");
         var input1 = document.createElement("input");
         var input2 = document.createElement("input");
         var input3 = document.createElement("input");
+        var input4 = document.createElement("input");
         var button = document.createElement("button");
         var span = document.createElement("span");
         var wrapper = document.createElement("div");
@@ -103,6 +106,14 @@ jQuery(document).ready(function() {
         p3.appendChild(label3);
         wrapper.appendChild(p3);
 
+        label4.appendChild(document.createTextNode("Facebook Event"));
+        input4.type = "url";
+        input4.name = concert_id + "fbevent";
+        label4.appendChild(input4);
+        p4.className = "bc_concert_row fbevent";
+        p4.appendChild(label4);
+        wrapper.appendChild(p4);
+
         li.appendChild(wrapper);
 
         button.addEventListener("click", removeListener, false);
@@ -119,7 +130,7 @@ jQuery(document).ready(function() {
         }
     };
 
-    if(parseInt(concertsCount.value, 10) > 0) {
+    if(concertsCount.valueAsNumber > 0) {
         var removeButtons = document.getElementsByClassName('bc_remove_concert');
         for(var i = 0; i < removeButtons.length; ++i) {
             removeButtons[i].addEventListener("click", removeListener, false);
