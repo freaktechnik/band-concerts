@@ -1,14 +1,17 @@
 <?php
+namespace BandConcerts;
+
 require_once "ConcertSeries.php";
 require_once "Event.php";
 
 use \Eluceo\iCal\Component\Calendar;
 use \Eluceo\iCal\Property\Event\Organizer;
+use \WP_Post;
 
 
 //TODO add settings for all these things.
 
-class BC_EventICal {
+class EventICal {
     const CAL_FEED = 'bc-ical';
     const CONTENT_TYPE = 'text/calendar';
 
@@ -72,7 +75,7 @@ class BC_EventICal {
     }
 
     private static function getCategories(int $postID) {
-        if(BC_ConcertSeries::isConcert($postID)) {
+        if(ConcertSeries::isConcert($postID)) {
             return [ 'Konzert' ];
         }
         else {
@@ -84,7 +87,7 @@ class BC_EventICal {
         if($concert['fee'] != '-1') {
             $entry = 'Eintritt: '.(empty($concert['fee']) ? 'frei, Kollekte' : $concert['fee'].' CHF');
         }
-        $event = new BC_Event($concert['id']);
+        $event = new Event($concert['id']);
 
         $event->setDtStart(new DateTime($concert['date'], $this->tz));
         if(empty($concert['dateend'])) {
@@ -117,14 +120,14 @@ class BC_EventICal {
         $event->setCategories(self::getCategories($post->ID));
         $event->setOrganizer($this->organizer);
         if($concert['unco'] === 'unconfirmed') {
-            $event->setStatus(BC_Event::STATUS_TENTATIVE);
+            $event->setStatus(Event::STATUS_TENTATIVE);
         }
         else {
-            $event->setStatus(BC_Event::STATUS_CONFIRMED);
+            $event->setStatus(Event::STATUS_CONFIRMED);
         }
-        $event->setTimeTransparency(BC_Event::TIME_TRANSPARENCY_TRANSPARENT);
+        $event->setTimeTransparency(Event::TIME_TRANSPARENCY_TRANSPARENT);
 
-        $flyer = get_post_meta($post->ID, BC_ConcertSeries::FLYER_FIELD, true);
+        $flyer = get_post_meta($post->ID, ConcertSeries::FLYER_FIELD, true);
         if(!empty($flyer)) {
             $event->attach = $flyer;
         }
@@ -141,7 +144,7 @@ class BC_EventICal {
     }
 
     private function addPost(WP_Post $post) {
-        $concerts = BC_ConcertSeries::getConcertsForSeries($post->ID);
+        $concerts = ConcertSeries::getConcertsForSeries($post->ID);
         foreach($concerts as $concert) {
             $this->addConcert($concert, $post);
         }

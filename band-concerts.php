@@ -31,22 +31,22 @@ Author URI: https://humanoids.be
 License: MIT
 Text-Domain: band-concerts
 */
+namespace BandConcerts;
 
 /**
  * @var string
  */
 define("BC_TEXT_DOMAIN", "band-concerts");
 
+
 require_once __DIR__."/vendor/autoload.php";
 
 require_once __DIR__."/includes/ConcertSeries.php";
 require_once __DIR__."/includes/EventICal.php";
 
-//TODO newsletter
 //TODO make currency configurable
-//TODO easy way to get concerts to series
 
-class BandConcertPlugin {
+class Plugin {
     public function __construct() {
         $this->registerHooks();
     }
@@ -61,9 +61,9 @@ class BandConcertPlugin {
     }
 
     public function onInit() {
-        BC_Concert::register();
-        BC_ConcertSeries::register();
-        BC_EventICal::register([BC_ConcertSeries::class, 'getAllItems']);
+        Concert::register();
+        ConcertSeries::register();
+        EventICal::register([ConcertSeries::class, 'getAllItems']);
     }
 
     public function onLoad() {
@@ -72,11 +72,11 @@ class BandConcertPlugin {
     }
 
     public function onBoxes(string $post_type) {
-        BC_ConcertSeries::addBox($post_type);
+        ConcertSeries::addBox($post_type);
     }
 
     public function onSave($post_id) {
-        BC_ConcertSeries::saveBox($post_id);
+        ConcertSeries::saveBox($post_id);
     }
 
     public function onEnqueue($context) {
@@ -90,10 +90,10 @@ class BandConcertPlugin {
         wp_register_script('jquery-ui-timepicker-i18n', plugin_dir_url(__FILE__).'admin/js/jquery-ui-timepicker-addon-i18n.min.js', [
             'jquery-ui-timepicker'
         ], "1.6.4", false);
-        wp_enqueue_script(BC_Concert::SCRIPT, plugin_dir_url(__FILE__).'admin/js/concerts.js', [
+        wp_enqueue_script(Concert::SCRIPT, plugin_dir_url(__FILE__).'admin/js/concerts.js', [
             'jquery-ui-timepicker-i18n'
         ], "1.0.3", false);
-        wp_enqueue_script(BC_ConcertSeries::SCRIPT, plugin_dir_url(__FILE__).'admin/js/concertseries.js', [
+        wp_enqueue_script(ConcertSeries::SCRIPT, plugin_dir_url(__FILE__).'admin/js/concertseries.js', [
             'jquery'
         ], '1.0.0', false);
 
@@ -105,10 +105,8 @@ class BandConcertPlugin {
     }
 
     public static function getCurrentConcerts(): array {
-        return BC_ConcertSeries::getCurrentItems();
+        return ConcertSeries::getCurrentItems();
     }
-
-
 }
 
-new BandConcertPlugin();
+new Plugin();

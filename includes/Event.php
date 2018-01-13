@@ -1,9 +1,10 @@
 <?php
-use \Eluceo\iCal\Component\Event;
+namespace BandConcerts;
+
 use \Eluceo\iCal\Property;
 use \Eluceo\iCal\Property\RawStringValue;
 
-class BC_Event extends Event {
+class Event extends \Eluceo\iCal\Component\Event {
     public $attach;
 
     public function buildPropertyBag() {

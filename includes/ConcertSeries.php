@@ -22,9 +22,13 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
+namespace BandConcerts;
+
 require_once("Concert.php");
 
-class BC_ConcertSeries {
+use \WP_Query;
+
+class ConcertSeries {
     /**
      * @var string
      */
@@ -105,7 +109,7 @@ class BC_ConcertSeries {
     }
 
     private static function registerTaxonomy() {
-        register_taxonomy(self::TAXONOMY, BC_Concert::POST_TYPE, [
+        register_taxonomy(self::TAXONOMY, Concert::POST_TYPE, [
             'labels' => [
                 'name' => __('Konzert Serien', BC_TEXT_DOMAIN),
                 'singular_name' => __('Konzert Serie', BC_TEXT_DOMAIN)
@@ -121,7 +125,7 @@ class BC_ConcertSeries {
             ],
             'sort' => false
         ]);
-        register_taxonomy_for_object_type(self::TAXONOMY, BC_Concert::POST_TYPE);
+        register_taxonomy_for_object_type(self::TAXONOMY, Concert::POST_TYPE);
     }
 
     public static function addBox(string $post_type) {
@@ -146,7 +150,7 @@ class BC_ConcertSeries {
                 self::POST_TYPE,
                 'side'
             );
-            BC_Concert::addBox(self::POST_TYPE, self::TAXONOMY);
+            Concert::addBox(self::POST_TYPE, self::TAXONOMY);
         }
     }
 
@@ -204,12 +208,12 @@ class BC_ConcertSeries {
             $content = sanitize_text_field($_POST['bc_flyer_id']);
             update_post_meta($postID, self::FLYER_FIELD, $content);
 
-            BC_Concert::saveBox($postID, self::TAXONOMY);
+            Concert::saveBox($postID, self::TAXONOMY);
         }
     }
 
     public static function getCurrentItems(): array {
-        $ids = BC_Concert::getCurrentParents(self::TAXONOMY);
+        $ids = Concert::getCurrentParents(self::TAXONOMY);
 
         $q = new WP_Query([
             'post_type' => self::POST_TYPE,
@@ -234,7 +238,7 @@ class BC_ConcertSeries {
     }
 
     public static function getConcertsForSeries($post_id): array {
-        return BC_Concert::getPosts(self::TAXONOMY, $post_id);
+        return Concert::getPosts(self::TAXONOMY, $post_id);
     }
 
     public static function isConcert($postID) {
