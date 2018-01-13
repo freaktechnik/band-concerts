@@ -80,7 +80,7 @@ class BandConcertPlugin {
     }
 
     public function onEnqueue($context) {
-        if($context !== 'post.php') {
+        if($context != 'post.php' && $context != 'post-new.php') {
             return;
         }
         wp_register_script('jquery-ui-timepicker', plugin_dir_url(__FILE__).'admin/js/jquery-ui-timepicker-addon.min.js', [
