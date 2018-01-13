@@ -87,8 +87,13 @@ class BC_EventICal {
         $event = new BC_Event($concert['id']);
 
         $event->setDtStart(new DateTime($concert['date'], $this->tz));
-        $date = new DateTime($concert['date'], $this->tz);
-        $date->add($this->duration);
+        if(empty($concert['dateend'])) {
+            $date = new DateTime($concert['date'], $this->tz);
+            $date->add($this->duration);
+        }
+        else {
+            $date = new DateTime($concert['dateend'], $this->tz);
+        }
         $event->setDtEnd($date);
 
         $event->setSummary($post->post_title);

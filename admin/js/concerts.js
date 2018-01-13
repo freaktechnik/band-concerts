@@ -30,7 +30,7 @@ jQuery(document).ready(function() {
     var removedConcerts = document.getElementById("bc_removed_concerts");
     var concertsCount = document.getElementById("bc_concerts_count");
     var concertIds = document.getElementById("bc_concerts_ids");
-    var currentNumber = concertsCount.valueAsNumber;
+    var currentNumber = parseInt(concertsCount.value, 10);
     var removeListener = function(e) {
         e.preventDefault();
         var parent = e.target.parentNode;
@@ -60,14 +60,17 @@ jQuery(document).ready(function() {
         var p2 = document.createElement("p");
         var p3 = document.createElement("p");
         var p4 = document.createElement("p");
+        var p5 = document.createElement("p");
         var label1 = document.createElement("label");
         var label2 = document.createElement("label");
         var label3 = document.createElement("label");
         var label4 = document.createElement("label");
+        var label5 = document.createElement("label");
         var input1 = document.createElement("input");
         var input2 = document.createElement("input");
         var input3 = document.createElement("input");
         var input4 = document.createElement("input");
+        var input5 = document.createElement("input");
         var button = document.createElement("button");
         var span = document.createElement("span");
         var wrapper = document.createElement("div");
@@ -87,6 +90,19 @@ jQuery(document).ready(function() {
         p1.className = "bc_concert_row";
         p1.appendChild(label1);
         wrapper.appendChild(p1);
+
+        label5.appendChild(document.createTextNode("Ende "));
+        input5.type = "text";
+        input5.name = concert_id + "dateend";
+        input5.className = "bc_concert_dateend";
+        jQuery(input5).datetimepicker({
+            timeFormat: "HH:mm:ss",
+            dateFormat: "yy-mm-dd"
+        });
+        label5.appendChild(input5);
+        p5.className = "bc_concert_row";
+        p5.appendChild(label5);
+        wrapper.appendChild(p5);
 
         label2.appendChild(document.createTextNode("Ort "));
         input2.type = "text";
@@ -130,7 +146,7 @@ jQuery(document).ready(function() {
         }
     };
 
-    if(concertsCount.valueAsNumber > 0) {
+    if(currentNumber > 0) {
         var removeButtons = document.getElementsByClassName('bc_remove_concert');
         for(var i = 0; i < removeButtons.length; ++i) {
             removeButtons[i].addEventListener("click", removeListener, false);
@@ -140,7 +156,7 @@ jQuery(document).ready(function() {
     addButton.addEventListener("click", addListener, false);
 
     jQuery.datepicker.setDefaults(jQuery.datepicker.regional['de']);
-    jQuery('.bc_concert_date').datetimepicker({
+    jQuery('.bc_concert_date,.bc_concert_dateend').datetimepicker({
         timeFormat: "HH:mm:ss",
         dateFormat: "yy-mm-dd"
     });
