@@ -57,6 +57,7 @@ class BC_Concert {
      */
     const FEE_FIELD = 'bc_concert_fee';
     const FBEVENT_FIELD = 'bc_concert_fbevent';
+    const UNCONFIRMED_FIELD = 'bc_concert_unco';
     /**
      * @var string
      */
@@ -95,7 +96,8 @@ class BC_Concert {
             'dateend' => esc_attr(get_post_meta($p->ID, self::DATE_END_FIELD, true)) ?? '',
             'location' => esc_attr(get_post_meta($p->ID, self::LOCATION_FIELD, true)),
             'fee' => esc_attr(get_post_meta($p->ID, self::FEE_FIELD, true)) ?? -1,
-            'fbevent' => esc_attr(get_post_meta($p->ID, self::FBEVENT_FIELD, true)) ?? ''
+            'fbevent' => esc_attr(get_post_meta($p->ID, self::FBEVENT_FIELD, true)) ?? '',
+            'unco' => get_post_meta($p->ID, self::UNCONFIRMED_FIELD, true) === 'unconfirmed'
         ];
     }
 
@@ -157,6 +159,9 @@ class BC_Concert {
                         <label><?php _e('Ende', BC_TEXT_DOMAIN) ?> <input type="text" name="<?php echo $concert_id ?>dateend" class="bc_concert_dateend" value="<?php echo $concert['dateend'] ?>"></label>
                     </p>
                     <p class="bc_concert_row">
+                        <label><?php _e('Unbestätigt/Ganztags', BC_TEXT_DOMAIN) ?> <input type="checkbox" name="<?php echo $concert_id ?>unco" class="bc_concert_unco"<?php echo $concert['unco'] == 'unconfirmed' ? ' checked' : '' ?> value="unconfirmed"></label>
+                    </p>
+                    <p class="bc_concert_row">
                         <label><?php _e('Ort', BC_TEXT_DOMAIN) ?> <input type="text" name="<?php echo $concert_id ?>location" value="<?php echo $concert['location'] ?>"></label>
                     </p>
                     <p class="bc_concert_row fee">
@@ -201,23 +206,27 @@ class BC_Concert {
                 $fee = intval($_POST[$concert_id.'fee']);
                 $fbevent = sanitize_text_field($_POST[$concert_id.'fbevent']);
                 $dateend = sanitize_text_field($_POST[$concert_id.'dateend']);
+                $unconfirmed = sanitize_text_field($_POST[$concert_id.'unco']);
 
-                //TODO ensure date matches the pattern
+                //TODO ensure dates match the pattern
 
                 $props = [
                     'post_type' => self::POST_TYPE,
-                    'tax_input' => [],
+                    'tax_input' => [
+                        $taxonomy_name => strval($post_id)
+                    ],
                     'meta_input' => [],
                     'post_date' => $date,
                     'post_date_gmt' => get_gmt_from_date($date),
-                    'post_name' => sanitize_title($post_id.$date.$location.$fee)
+                    'post_name' => sanitize_title($post_id.$date.$location.$fee),
+                    'meta_input' => [
+                        self::LOCATION_FIELD => $location,
+                        self::FEE_FIELD => $fee,
+                        self::FBEVENT_FIELD => $fbevent,
+                        self::DATE_END_FIELD => $dateend,
+                        self::UNCONFIRMED_FIELD => $unconfirmed
+                    ]
                 ];
-
-                $props['tax_input'][$taxonomy_name] = strval($post_id);
-                $props['meta_input'][self::LOCATION_FIELD] = $location;
-                $props['meta_input'][self::FEE_FIELD] = $fee;
-                $props['meta_input'][self::FBEVENT_FIELD] = $fbevent;
-                $props['meta_input'][self::DATE_END_FIELD] = $dateend;
 
                 if(isset($_POST[$concert_id.'id'])) {
                     $concert_post_id = sanitize_text_field($_POST[$concert_id.'id']);

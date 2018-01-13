@@ -39,8 +39,18 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
 .bc_concert_row input {
     float: right;
-    width: 90%;
+    width: 85%;
     margin-left: 1em;
+}
+
+.wp-admin p.bc_concert_row label input[type="checkbox"] {
+    width: 0;
+    height: 1.5em;
+    margin-right: 85%;
+    transform: translate(100%, 0);
+    vertical-align: middle;
+    margin-top: 0;
+    margin-left: 0;
 }
 
 .wp-core-ui .bc_concert .button {

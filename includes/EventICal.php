@@ -91,8 +91,11 @@ class BC_EventICal {
             $date = new DateTime($concert['date'], $this->tz);
             $date->add($this->duration);
         }
-        else {
+        else if(empty($concert['unco'])) {
             $date = new DateTime($concert['dateend'], $this->tz);
+        }
+        if($concert['unco'] === 'unconfirmed') {
+            $event->setNoTime(true);
         }
         $event->setDtEnd($date);
 
@@ -113,7 +116,12 @@ class BC_EventICal {
 
         $event->setCategories(self::getCategories($post->ID));
         $event->setOrganizer($this->organizer);
-        $event->setStatus(BC_Event::STATUS_CONFIRMED);
+        if($concert['unco'] === 'unconfirmed') {
+            $event->setStatus(BC_Event::STATUS_TENTATIVE);
+        }
+        else {
+            $event->setStatus(BC_Event::STATUS_CONFIRMED);
+        }
         $event->setTimeTransparency(BC_Event::TIME_TRANSPARENCY_TRANSPARENT);
 
         $flyer = get_post_meta($post->ID, BC_ConcertSeries::FLYER_FIELD, true);

@@ -61,16 +61,19 @@ jQuery(document).ready(function() {
         var p3 = document.createElement("p");
         var p4 = document.createElement("p");
         var p5 = document.createElement("p");
+        var p6 = document.createElement("p");
         var label1 = document.createElement("label");
         var label2 = document.createElement("label");
         var label3 = document.createElement("label");
         var label4 = document.createElement("label");
         var label5 = document.createElement("label");
+        var label6 = document.createElement("label");
         var input1 = document.createElement("input");
         var input2 = document.createElement("input");
         var input3 = document.createElement("input");
         var input4 = document.createElement("input");
         var input5 = document.createElement("input");
+        var input6 = document.createElement("input");
         var button = document.createElement("button");
         var span = document.createElement("span");
         var wrapper = document.createElement("div");
@@ -103,6 +106,16 @@ jQuery(document).ready(function() {
         p5.className = "bc_concert_row";
         p5.appendChild(label5);
         wrapper.appendChild(p5);
+
+        label6.appendChild(document.createTextNode("Unbestätigt/Ganztags "));
+        input6.type = "checkbox";
+        input6.value = 'unconfirmed';
+        input6.name = concert_id + "unco";
+        input6.className = "bc_concert_unco";
+        label6.appendChild(input6);
+        p6.className = "bc_concert_row";
+        p6.appendChild(label6);
+        wrapper.appendChild(p6);
 
         label2.appendChild(document.createTextNode("Ort "));
         input2.type = "text";
