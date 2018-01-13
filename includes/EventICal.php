@@ -27,7 +27,7 @@ class BC_EventICal {
         add_filter('feed_content_type', [self::class, 'onFeedContentType']);
         add_feed(self::CAL_FEED, function() use ($getPosts) {
             $posts = $getPosts();
-            $calendar = new self($posts);
+            $calendar = self::MakeCalendar($posts);
             $calendar->emit();
         });
     }
@@ -39,10 +39,20 @@ class BC_EventICal {
         return $contentType;
     }
 
-    //TODO add ability to only get a single concert, should also get an unique cal id.
-    public function __construct(array $allPosts, $title = 'Anlässe') {
+    public static function MakeCalendar(array $allPosts)
+    {
+        return new self($allPosts);
+    }
+
+    public static function MakeSingleEvent(array $concert)
+    {
+        $parent = get_post($concert['parent_id']);
+        return new self([ $concert ], ' - '.$parent->post_title, $concert['id']);
+    }
+
+    public function __construct(array $allPosts, $title = 'Anlässe', $id = '') {
         date_default_timezone_set(self::$timezone);
-        $this->cal = new Calendar(get_site_url());
+        $this->cal = new Calendar(get_site_url().$id);
         $this->cal->setCalendarColor(self::$color);
         $this->cal->setName(get_bloginfo('name').' '.$title);
         $this->cal->setPublishedTTL("P1W");
@@ -52,7 +62,12 @@ class BC_EventICal {
         $this->tz = new DateTimeZone(self::$timezone);
 
         foreach($allPosts as $post) {
-            $this->addPost($post);
+            if(is_array($post)) {
+                $this->addConcert($post);
+            }
+            else {
+                $this->addPost($post);
+            }
         }
     }
 
@@ -104,11 +119,18 @@ class BC_EventICal {
         return $event;
     }
 
+    private function addConcert(array $concert, WP_Post $post = NULL) {
+        if($post === NULL) {
+            $post = get_post($concert['parent_id']);
+        }
+        $event = $this->makeEvent($post, $concert);
+        $this->cal->addComponent($event);
+    }
+
     private function addPost(WP_Post $post) {
         $concerts = BC_ConcertSeries::getConcertsForSeries($post->ID);
         foreach($concerts as $concert) {
-            $event = $this->makeEvent($post, $concert);
-            $this->cal->addComponent($event);
+            $this->addConcert($concert, $post);
         }
     }
 

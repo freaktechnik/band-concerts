@@ -241,4 +241,10 @@ class BC_ConcertSeries {
         $content = get_post_meta($postID, self::TYPE_FIELD, true);
         return $content !== self::TYPE_EVENT;
     }
+
+    public static function getSeriesForConcert($post_id): WP_Post {
+        $terms = get_the_terms($post_id, self::TAXONOMY);
+        $id = $terms[0]->name;
+        return get_post($id);
+    }
 }

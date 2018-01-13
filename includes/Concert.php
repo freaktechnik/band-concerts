@@ -69,7 +69,8 @@ class BC_Concert {
             ],
             'public' => false,
             'show_in_nav_menus' => false,
-            'has_archive' => false
+            'has_archive' => false,
+            'publicly_queryable' => true
         ]);
     }
 
@@ -83,6 +84,17 @@ class BC_Concert {
             'default',
             [ $taxonomy_name ]
         );
+    }
+
+    public static function FormatPost(WP_Post $p, $post_id): array {
+        return [
+            'id' => esc_attr($p->ID),
+            'parent_id' => $post_id,
+            'date' => esc_attr($p->post_date),
+            'location' => esc_attr(get_post_meta($p->ID, self::LOCATION_FIELD, true)),
+            'fee' => esc_attr(get_post_meta($p->ID, self::FEE_FIELD, true)) ?? -1,
+            'fbevent' => esc_attr(get_post_meta($p->ID, self::FBEVENT_FIELD, true)) ?? ''
+        ];
     }
 
     public static function getPosts($taxonomy_name, $post_id): array {
@@ -111,14 +123,7 @@ class BC_Concert {
         $posts = [];
         if($postsQuery->have_posts()) {
             foreach($postsQuery->get_posts() as $p) {
-                $posts[] = [
-                    'id' => esc_attr($p->ID),
-                    'parent_id' => $post_id,
-                    'date' => esc_attr($p->post_date),
-                    'location' => esc_attr(get_post_meta($p->ID, self::LOCATION_FIELD, true)),
-                    'fee' => esc_attr(get_post_meta($p->ID, self::FEE_FIELD, true)) ?? -1,
-                    'fbevent' => esc_attr(get_post_meta($p->ID, self::FBEVENT_FIELD, true)) ?? ''
-                ];
+                $posts[] = self::FormatPost($p, $post_id);
             }
         }
 
