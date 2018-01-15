@@ -7,6 +7,7 @@ require_once "Event.php";
 use \Eluceo\iCal\Component\Calendar;
 use \Eluceo\iCal\Property\Event\Organizer;
 use \WP_Post;
+use \DateTime;
 
 
 //TODO add settings for all these things.
@@ -60,9 +61,9 @@ class EventICal {
         $this->cal->setName(get_bloginfo('name').' '.$title);
         $this->cal->setPublishedTTL("P1W");
 
-        $this->duration = new DateInterval(self::$eventDuration);
+        $this->duration = new \DateInterval(self::$eventDuration);
         $this->organizer = new Organizer('MAILTO:events@mgmuehlethurnen.ch', [ 'CN' => self::$organizerName ]);
-        $this->tz = new DateTimeZone(self::$timezone);
+        $this->tz = new \DateTimeZone(self::$timezone);
 
         foreach($allPosts as $post) {
             if(is_array($post)) {
