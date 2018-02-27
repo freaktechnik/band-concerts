@@ -43,6 +43,7 @@ require_once __DIR__."/vendor/autoload.php";
 
 require_once __DIR__."/includes/ConcertSeries.php";
 require_once __DIR__."/includes/EventICal.php";
+require_once __DIR__."/includes/ReportsWidget.php";
 
 //TODO make currency configurable
 
@@ -53,6 +54,7 @@ class Plugin {
 
     private function registerHooks() {
         add_action('init', [$this, 'onInit']);
+        add_action('widgets_init', [$this, 'onWidgets']);
         if(is_admin()) {
             add_action('load-post.php', [$this, 'onLoad']);
             add_action('load-post-new.php', [$this, 'onLoad']);
@@ -102,6 +104,10 @@ class Plugin {
             'jquery-ui'
         ], "1.6.4", "all");
         wp_enqueue_style('bc_concert_admin', plugin_dir_url(__FILE__).'admin/css/styles.css', [], "1.0.0", "all");
+    }
+
+    public function onWidgets() {
+        register_widget('\BandConcerts\ReportsWidget');
     }
 
     public static function getCurrentConcerts(): array {

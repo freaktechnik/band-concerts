@@ -251,4 +251,42 @@ class ConcertSeries {
         $id = $terms[0]->name;
         return get_post($id);
     }
+
+    public static function getSeriesWithReport(string $after = null) : array {
+        $ids = Concert::getPastParents(self::TAXONOMY, $after);
+        $pastPostsWithReport = [];
+        foreach ($ids as $id) {
+            $report = get_post_meta($id, self::REVIEW_FIELD, true);
+            if (!empty($report)) {
+                $pastPostsWithReport[] = $id;
+            }
+        }
+        $q = new WP_Query([
+            'post_type' => self::POST_TYPE,
+            'post__in' => $pastPostsWithReport,
+            'nopaging'
+        ]);
+        $ps = [];
+        if($q->have_posts()) {
+            foreach($q->get_posts() as $post) {
+                $concerts = self::getConcertsForSeries($post->ID);
+                if(!count($concerts)) {
+                    continue;
+                }
+                $latestConcertDate = NULL;
+                foreach($concerts as $i) {
+                    $date = strtotime($i['date']);
+                    if(empty($latestConcertDate) || $date > $latestConcertDate) {
+                        $latestConcertDate = $date;
+                    }
+                }
+                $post->parsedTime = $latestConcertDate;
+                $ps[] = $post;
+            }
+            usort($ps, function($a, $b) {
+                return $b->parsedTime - $a->parsedTime;
+            });
+        }
+        return $ps;
+    }
 }

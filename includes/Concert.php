@@ -258,4 +258,29 @@ class Concert {
         }
         return $ps;
     }
+
+    public static function getPastParents(string $taxonomy_name, string $after = null): array {
+        $q = [
+            'post_type' => self::POST_TYPE,
+            'post_status' => 'any',
+            'nopaging' => true,
+            'date_query' => [
+                'before' => 'today'
+            ]
+        ];
+        if($after !== NULL) {
+            $q['date_query']['after'] = $after;
+        }
+        $postsQuery = new WP_Query($q);
+        $ps = [];
+        if($postsQuery->have_posts()) {
+            foreach($postsQuery->get_posts() as $p) {
+                $terms = get_the_terms($p, $taxonomy_name);
+                if(!in_array($terms[0]->name, $ps)) {
+                    $ps[] = intval($terms[0]->name);
+                }
+            }
+        }
+        return $ps;
+    }
 }
