@@ -41,6 +41,7 @@ class ReportsWidget extends \WP_Widget {
             $limit = $articles[$count - 1]->post_date;
         }
         $reports = ConcertSeries::getSeriesWithReport($limit);
+        /** @var WP_Post[] $articles */
         $articles = array_merge($articles, array_slice($reports, 0, $count));
         // store the three latest entries in $articles
         usort($articles, function($a, $b) {
@@ -51,7 +52,7 @@ class ReportsWidget extends \WP_Widget {
             ?><ul><?php
             foreach($articles as $article)
             {
-                ?><li><a href="<?php echo get_permalink($article); ?>"><?php echo get_the_title($article); ?></a></li><?php
+                ?><li><a href="<?php echo get_permalink($article); if($article->post_type == ConcertSeries::POST_TYPE) { echo "#review"; } ?>"><?php echo get_the_title($article); ?></a></li><?php
             }
             ?></ul><?php
         }

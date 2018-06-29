@@ -27,6 +27,7 @@ namespace BandConcerts;
 require_once("Concert.php");
 
 use \WP_Query;
+use \WP_Post;
 
 class ConcertSeries {
     /**
@@ -252,7 +253,7 @@ class ConcertSeries {
         return get_post($id);
     }
 
-    public static function getSeriesWithReport(string $after = null) : array {
+    public static function getSeriesWithReport(string $after = null): array {
         $ids = Concert::getPastParents(self::TAXONOMY, $after);
         $pastPostsWithReport = [];
         foreach ($ids as $id) {
