@@ -122,7 +122,7 @@ class Concert {
                 ]
             ],
             'orderby' => 'date',
-            'order' => 'ASC',
+            'order' => 'DESC',
             'nopaging' => true
         ]);
         $posts = [];
@@ -243,9 +243,12 @@ class Concert {
             'post_type' => self::POST_TYPE,
             'post_status' => 'any',
             'nopaging' => true,
+            'posts_per_page' => -1,
             'date_query' => [
                 'after' => 'today'
-            ]
+            ],
+            'orderby' => 'date',
+            'order' => 'ASC'
         ]);
         $ps = [];
         if($postsQuery->have_posts()) {
@@ -264,9 +267,12 @@ class Concert {
             'post_type' => self::POST_TYPE,
             'post_status' => 'any',
             'nopaging' => true,
+            'posts_per_page' => -1,
             'date_query' => [
                 'before' => 'today'
-            ]
+            ],
+            'orderby' => 'date',
+            'order' => 'DESC'
         ];
         if($after !== NULL) {
             $q['date_query']['after'] = $after;

@@ -60,6 +60,7 @@ class Plugin {
             add_action('load-post-new.php', [$this, 'onLoad']);
             add_action('admin_enqueue_scripts', [$this, 'onEnqueue']);
         }
+        add_shortcode('concert', [$this, 'concertShortcode']);
     }
 
     public function onInit() {
@@ -112,6 +113,21 @@ class Plugin {
 
     public static function getCurrentConcerts(): array {
         return ConcertSeries::getCurrentItems();
+    }
+
+    public static function concertShortcode($atts) {
+        // Attributes
+        $atts = shortcode_atts(
+            [
+                'id' => null,
+                'expanded' => false,
+                'with_details' => false,
+                'wrapper' => 'span'
+            ],
+            $atts,
+            'concert'
+        );
+        return ConcertSeries::shortcode($atts['id'], $atts['expanded'], $atts['with_details'], $atts['wrapper']);
     }
 }
 

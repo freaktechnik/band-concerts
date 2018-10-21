@@ -9,7 +9,7 @@ use \Eluceo\iCal\Property\Event\Organizer;
 use \WP_Post;
 use \DateTime;
 
-
+//TODO https://tools.ietf.org/html/rfc7986
 //TODO add settings for all these things.
 
 class EventICal {

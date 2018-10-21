@@ -219,7 +219,8 @@ class ConcertSeries {
         $q = new WP_Query([
             'post_type' => self::POST_TYPE,
             'post__in' => $ids,
-            'nopaging'
+            'nopaging' => true,
+            'posts_per_page' => -1
         ]);
         if($q->have_posts()) {
             return $q->get_posts();
@@ -289,5 +290,29 @@ class ConcertSeries {
             });
         }
         return $ps;
+    }
+
+    public static function shortcode(string $id = null, $expanded, $withDetails, $wrapper = 'span'): string
+    {
+        if($id) {
+            $q = new WP_Query([
+                'post_type' => self::POST_TYPE,
+                'p' => $id,
+                'nopaging' => true
+            ]);
+            if($q->have_posts()) {
+                $cs = $q->get_posts()[0];
+                $concerts = self::getConcertsForSeries($cs->ID);
+                $ret = '';
+                foreach($concerts as $concert) {
+                    $dateFormat = $concert['unco'] ? 'j. F Y' : 'j. F Y, H:i';
+                    $ret .= '<'.$wrapper.' class="bc-series-shortcode"><a href="'.get_permalink($cs).'">'.get_the_date($dateFormat, $concert['id']).', '.get_the_title($cs).'</a></'.$wrapper.'>';
+                }
+                if(!empty($ret)) {
+                    return $ret;
+                }
+            }
+        }
+        return '';
     }
 }
