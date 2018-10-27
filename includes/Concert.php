@@ -122,7 +122,7 @@ class Concert {
                 ]
             ],
             'orderby' => 'date',
-            'order' => 'DESC',
+            'order' => 'ASC',
             'nopaging' => true
         ]);
         $posts = [];

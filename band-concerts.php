@@ -60,6 +60,9 @@ class Plugin {
             add_action('load-post-new.php', [$this, 'onLoad']);
             add_action('admin_enqueue_scripts', [$this, 'onEnqueue']);
         }
+        else {
+            add_action('pre_get_posts', [$this, 'onGetPosts']);
+        }
         add_shortcode('concert', [$this, 'concertShortcode']);
     }
 
@@ -109,6 +112,14 @@ class Plugin {
 
     public function onWidgets() {
         register_widget('\BandConcerts\ReportsWidget');
+    }
+
+    public function onGetPosts(\WP_Query $query) {
+        if($query->is_singular() && $query->query_vars['post_type'] == Concert::POST_TYPE) {
+            $query->set('suppress_filters', true);
+            $query->set('post_status', [ 'any', 'auto-draft', 'draft' ]);
+            $query->set('perm', 'readable');
+        }
     }
 
     public static function getCurrentConcerts(): array {
