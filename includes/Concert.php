@@ -269,7 +269,7 @@ class Concert {
             'nopaging' => true,
             'posts_per_page' => -1,
             'date_query' => [
-                'before' => 'today'
+                'before' => 'now'
             ],
             'orderby' => 'date',
             'order' => 'DESC'
