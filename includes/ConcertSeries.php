@@ -306,7 +306,7 @@ class ConcertSeries {
                 $ret = '';
                 foreach($concerts as $concert) {
                     $dateFormat = $concert['unco'] ? 'j. F Y' : 'j. F Y, H:i';
-                    $ret .= '<'.$wrapper.' class="bc-series-shortcode"><a href="'.get_permalink($cs).'">'.get_the_date($dateFormat, $concert['id']).', '.get_the_title($cs).'</a></'.$wrapper.'>';
+                    $ret .= '<'.$wrapper.' class="bc-series-shortcode"><a href="'.get_permalink($cs).'#event'.$concert['id'].'">'.get_the_date($dateFormat, $concert['id']).', '.get_the_title($cs).'</a></'.$wrapper.'>';
                 }
                 if(!empty($ret)) {
                     return $ret;
