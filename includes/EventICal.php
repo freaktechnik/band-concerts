@@ -98,7 +98,7 @@ class EventICal {
         else if(empty($concert['unco'])) {
             $date = new DateTime($concert['dateend'], $this->tz);
         }
-        if($concert['unco'] === 'unconfirmed') {
+        if($concert['unco']) {
             $event->setNoTime(true);
         }
         $event->setDtEnd($date);
@@ -120,7 +120,7 @@ class EventICal {
 
         $event->setCategories(self::getCategories($post->ID));
         $event->setOrganizer($this->organizer);
-        if($concert['unco'] === 'unconfirmed') {
+        if($concert['unco']) {
             $event->setStatus(Event::STATUS_TENTATIVE);
         }
         else {
@@ -137,6 +137,9 @@ class EventICal {
     }
 
     private function addConcert(array $concert, WP_Post $post = NULL) {
+        if($concert['cancelled']) {
+            return;
+        }
         if($post === NULL) {
             $post = get_post($concert['parent_id']);
         }

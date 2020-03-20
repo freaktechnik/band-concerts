@@ -55,14 +55,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
 .wp-core-ui .bc_concert .button {
     height: auto;
-    display: flex;
-    flex-direction: column;
     margin-top: 1em;
     margin-bottom: 0.5em;
-}
-
-.bc_concert .dashicon {
-    flex-grow: 1;
 }
 
 .bc_type {

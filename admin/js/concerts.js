@@ -62,18 +62,21 @@ jQuery(document).ready(function() {
         var p4 = document.createElement("p");
         var p5 = document.createElement("p");
         var p6 = document.createElement("p");
+        var p7 = document.createElement("p");
         var label1 = document.createElement("label");
         var label2 = document.createElement("label");
         var label3 = document.createElement("label");
         var label4 = document.createElement("label");
         var label5 = document.createElement("label");
         var label6 = document.createElement("label");
+        var label7 = document.createElement("label");
         var input1 = document.createElement("input");
         var input2 = document.createElement("input");
         var input3 = document.createElement("input");
         var input4 = document.createElement("input");
         var input5 = document.createElement("input");
         var input6 = document.createElement("input");
+        var input7 = document.createElement("input");
         var button = document.createElement("button");
         var span = document.createElement("span");
         var wrapper = document.createElement("div");
@@ -125,7 +128,7 @@ jQuery(document).ready(function() {
         p2.appendChild(label2);
         wrapper.appendChild(p2);
 
-        label3.appendChild(document.createTextNode("Eintritt (CHF)"));
+        label3.appendChild(document.createTextNode("Eintritt (CHF) "));
         input3.type = "number";
         input3.min = -1;
         input3.step = 1;
@@ -135,13 +138,31 @@ jQuery(document).ready(function() {
         p3.appendChild(label3);
         wrapper.appendChild(p3);
 
-        label4.appendChild(document.createTextNode("Facebook Event"));
+        label4.appendChild(document.createTextNode("Facebook Event "));
         input4.type = "url";
         input4.name = concert_id + "fbevent";
         label4.appendChild(input4);
         p4.className = "bc_concert_row fbevent";
         p4.appendChild(label4);
         wrapper.appendChild(p4);
+
+        label7.appendChild(document.createTextNode("Abgesagt "));
+        input7.type = "checkbox";
+        input7.name = concert_id + "cancelled";
+        input7.value = "cancel";
+        input7.className = "bc_concert_cancelled";
+        label7.appendChild(input7);
+        p7.className = "bc_concert_row";
+        p7.appendChild(label7);
+        wrapper.appendChild(p7);
+        input7.addEventListener("change", function() {
+            input1.readOnly = input7.checked;
+            input2.readOnly = input7.checked;
+            input3.readOnly = input7.checked;
+            input4.readOnly = input7.checked;
+            input5.readOnly = input7.checked;
+            input6.readOnly = input7.checked;
+        }, false);
 
         li.appendChild(wrapper);
 
@@ -163,6 +184,21 @@ jQuery(document).ready(function() {
         var removeButtons = document.getElementsByClassName('bc_remove_concert');
         for(var i = 0; i < removeButtons.length; ++i) {
             removeButtons[i].addEventListener("click", removeListener, false);
+        }
+        var cancelCheckboxes = document.getElementsByClassName("bc_concert_cancelled");
+        var cancelListener = function(event) {
+            var cancelCheckbox = event.target;
+            var wrapper = cancelCheckbox.parentNode.parentNode.parentNode;
+            var rows = wrapper.getElementsByClassName('bc_concert_row');
+            for(var r = 0; r < rows.length; ++r) {
+                if(rows[r] !== cancelCheckbox.parentNode.parentNode) {
+                    var input = rows[r].firstElementChild.getElementsByTagName('input')[0];
+                    input.readOnly = cancelCheckbox.checked;
+                }
+            }
+        };
+        for(var j = 0; j < cancelCheckboxes.length; ++j) {
+            cancelCheckboxes[j].addEventListener("change", cancelListener, false);
         }
     }
 

@@ -59,6 +59,7 @@ class Concert {
     const FEE_FIELD = 'bc_concert_fee';
     const FBEVENT_FIELD = 'bc_concert_fbevent';
     const UNCONFIRMED_FIELD = 'bc_concert_unco';
+    const CANCELLED_FIELD = 'bc_concert_cancelled';
     /**
      * @var string
      */
@@ -98,7 +99,8 @@ class Concert {
             'location' => esc_attr(get_post_meta($p->ID, self::LOCATION_FIELD, true)),
             'fee' => esc_attr(get_post_meta($p->ID, self::FEE_FIELD, true)) ?? -1,
             'fbevent' => esc_attr(get_post_meta($p->ID, self::FBEVENT_FIELD, true)) ?? '',
-            'unco' => get_post_meta($p->ID, self::UNCONFIRMED_FIELD, true) === 'unconfirmed'
+            'unco' => get_post_meta($p->ID, self::UNCONFIRMED_FIELD, true) === 'unconfirmed',
+            'cancelled' => get_post_meta($p->ID, self::CANCELLED_FIELD, true) === 'cancel',
         ];
     }
 
@@ -149,27 +151,31 @@ class Concert {
             foreach($posts as $i => $concert) {
                 $concert_id = 'bc_concert'.$i.'_';
                 $postIDs[] = $i;
+                $cancelled = $concert['cancelled'];
             ?>
             <li id="bc_concert_<?php echo $i ?>" class="bc_concert">
                 <div>
                     <input class="bc_concert_id" name="<?php echo $concert_id ?>id" value="<?php echo $concert['id'] ?>" type="hidden">
                     <p class="bc_concert_row">
-                        <label><?php _e('Datum', BC_TEXT_DOMAIN) ?> <input type="text" name="<?php echo $concert_id ?>date" class="bc_concert_date" value="<?php echo $concert['date'] ?>"></label>
+                        <label><?php _e('Datum', BC_TEXT_DOMAIN) ?> <input type="text" name="<?php echo $concert_id ?>date" class="bc_concert_date" value="<?php echo $concert['date'] ?>"<?php echo $cancelled ? ' readonly' : '' ?>></label>
                     </p>
                     <p class="bc_concert_row">
-                        <label><?php _e('Ende', BC_TEXT_DOMAIN) ?> <input type="text" name="<?php echo $concert_id ?>dateend" class="bc_concert_dateend" value="<?php echo $concert['dateend'] ?>"></label>
+                        <label><?php _e('Ende', BC_TEXT_DOMAIN) ?> <input type="text" name="<?php echo $concert_id ?>dateend" class="bc_concert_dateend" value="<?php echo $concert['dateend'] ?>"<?php echo $cancelled ? ' readonly' : '' ?>></label>
                     </p>
                     <p class="bc_concert_row">
-                        <label><?php _e('Unbestätigt/Ganztags', BC_TEXT_DOMAIN) ?> <input type="checkbox" name="<?php echo $concert_id ?>unco" class="bc_concert_unco"<?php echo $concert['unco'] == 'unconfirmed' ? ' checked' : '' ?> value="unconfirmed"></label>
+                        <label><?php _e('Unbestätigt/Ganztags', BC_TEXT_DOMAIN) ?> <input type="checkbox" name="<?php echo $concert_id ?>unco" class="bc_concert_unco"<?php echo $concert['unco'] ? ' checked' : '' ?> value="unconfirmed"<?php echo $cancelled ? ' readonly' : '' ?>></label>
                     </p>
                     <p class="bc_concert_row">
-                        <label><?php _e('Ort', BC_TEXT_DOMAIN) ?> <input type="text" name="<?php echo $concert_id ?>location" value="<?php echo $concert['location'] ?>"></label>
+                        <label><?php _e('Ort', BC_TEXT_DOMAIN) ?> <input type="text" name="<?php echo $concert_id ?>location" value="<?php echo $concert['location'] ?>"<?php echo $cancelled ? ' readonly' : '' ?>></label>
                     </p>
                     <p class="bc_concert_row fee">
-                        <label><?php _e('Eintritt (CHF)', BC_TEXT_DOMAIN) ?> <input type="number" min="-1" step="1" name="<?php echo $concert_id ?>fee" value="<?php echo $concert['fee'] ?>"></label>
+                        <label><?php _e('Eintritt (CHF)', BC_TEXT_DOMAIN) ?> <input type="number" min="-1" step="1" name="<?php echo $concert_id ?>fee" value="<?php echo $concert['fee'] ?>"<?php echo $cancelled ? 'readonly' : '' ?>></label>
                     </p>
                     <p class="bc_concert_row fbevent">
-                        <label><?php _e('Facebook Event', BC_TEXT_DOMAIN) ?> <input type="url" name="<?php echo $concert_id ?>fbevent" value="<?php echo $concert['fbevent'] ?>"></label>
+                        <label><?php _e('Facebook Event', BC_TEXT_DOMAIN) ?> <input type="url" name="<?php echo $concert_id ?>fbevent" value="<?php echo $concert['fbevent'] ?>"<?php echo $cancelled ? ' readonly' : '' ?>></label>
+                    </p>
+                    <p class="bc_concert_row">
+                        <label><?php _e('Abgesagt', BC_TEXT_DOMAIN) ?> <input type="checkbox" name="<?php echo $concert_id ?>cancelled" class="bc_concert_cancelled"<?php echo $cancelled ? ' checked' : '' ?> value="cancel"></label>
                     </p>
                 </div>
                 <button class="bc_remove_concert button"><span class="dashicons dashicons-trash"></span></button>
@@ -208,6 +214,7 @@ class Concert {
                 $fbevent = sanitize_text_field($_POST[$concert_id.'fbevent']);
                 $dateend = sanitize_text_field($_POST[$concert_id.'dateend']);
                 $unconfirmed = sanitize_text_field($_POST[$concert_id.'unco']);
+                $cancelled = sanitize_text_field($_POST[$concert_id.'cancelled']);
 
                 //TODO ensure dates match the pattern
 
@@ -216,7 +223,6 @@ class Concert {
                     'tax_input' => [
                         $taxonomy_name => strval($post_id)
                     ],
-                    'meta_input' => [],
                     'post_date' => $date,
                     'post_date_gmt' => get_gmt_from_date($date),
                     'post_name' => sanitize_title($post_id.$date.$location.$fee),
@@ -225,7 +231,8 @@ class Concert {
                         self::FEE_FIELD => $fee,
                         self::FBEVENT_FIELD => $fbevent,
                         self::DATE_END_FIELD => $dateend,
-                        self::UNCONFIRMED_FIELD => $unconfirmed
+                        self::UNCONFIRMED_FIELD => $unconfirmed,
+                        self::CANCELLED_FIELD => $cancelled,
                     ]
                 ];
 
