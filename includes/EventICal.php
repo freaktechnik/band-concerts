@@ -18,7 +18,6 @@ class EventICal {
 
     // Default event duration in Minutes
     public static $eventDuration = 'PT90M';
-    public static $organizerName = 'MG Mühlethurnen';
     public static $color = '#047983';
     public static $timezone = "Europe/Zurich";
 
@@ -62,7 +61,11 @@ class EventICal {
         $this->cal->setPublishedTTL("P1W");
 
         $this->duration = new \DateInterval(self::$eventDuration);
-        $this->organizer = new Organizer('MAILTO:events@mgmuehlethurnen.ch', [ 'CN' => self::$organizerName ]);
+        $sitename = wp_parse_url(network_home_url(), PHP_URL_HOST);
+        if(substr($sitename, 0, 4) === 'www.') {
+            $sitename = substr($sitename, 4);
+        }
+        $this->organizer = new Organizer('MAILTO:events@'.$sitename, [ 'CN' => get_bloginfo('name', 'display') ]);
         $this->tz = new \DateTimeZone(self::$timezone);
 
         foreach($allPosts as $post) {
