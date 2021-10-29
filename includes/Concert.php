@@ -261,8 +261,9 @@ class Concert {
         if($postsQuery->have_posts()) {
             foreach($postsQuery->get_posts() as $p) {
                 $terms = get_the_terms($p, $taxonomy_name);
-                if(!in_array($terms[0]->name, $ps)) {
-                    $ps[] = intval($terms[0]->name);
+                $normalized = intval($terms[0]->name);
+                if(!in_array($normalized, $ps)) {
+                    $ps[] = $normalized;
                 }
             }
         }
@@ -289,8 +290,9 @@ class Concert {
         if($postsQuery->have_posts()) {
             foreach($postsQuery->get_posts() as $p) {
                 $terms = get_the_terms($p, $taxonomy_name);
-                if(!in_array($terms[0]->name, $ps)) {
-                    $ps[] = intval($terms[0]->name);
+                $normalized = intval($terms[0]->name);
+                if(!in_array($normalized, $ps)) {
+                    $ps[] = $normalized;
                 }
             }
         }

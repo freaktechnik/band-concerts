@@ -263,10 +263,14 @@ class ConcertSeries {
                 $pastPostsWithReport[] = $id;
             }
         }
+        if (count($pastPostsWithReport) == 0) {
+            return [];
+        }
         $q = new WP_Query([
             'post_type' => self::POST_TYPE,
             'post__in' => $pastPostsWithReport,
-            'nopaging'
+            'ignore_sticky_posts' => true,
+            'nopaging' => true,
         ]);
         $ps = [];
         if($q->have_posts()) {
