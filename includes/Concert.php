@@ -145,7 +145,6 @@ class Concert {
         $postIDs = [];
         ?>
         <input type="hidden" value="" name="bc_removed_concerts" id="bc_removed_concerts">
-        <input type="hidden" value="<?php echo count($posts) ?>" name="bc_concerts_count" id="bc_concerts_count">
         <ul id="bc_concerts_list">
             <?php
             foreach($posts as $i => $concert) {

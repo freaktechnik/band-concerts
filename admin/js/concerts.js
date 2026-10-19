@@ -28,9 +28,8 @@ jQuery(document).ready(function() {
     }
     var list = document.getElementById("bc_concerts_list");
     var removedConcerts = document.getElementById("bc_removed_concerts");
-    var concertsCount = document.getElementById("bc_concerts_count");
     var concertIds = document.getElementById("bc_concerts_ids");
-    var currentNumber = parseInt(concertsCount.value, 10);
+    var currentNumber = Math.max(...concertIds.value.split(",").map(id => Number.parseInt(id)));
     var removeListener = function(e) {
         e.preventDefault();
         var parent = e.target.parentNode;
@@ -180,7 +179,7 @@ jQuery(document).ready(function() {
         }
     };
 
-    if(currentNumber > 0) {
+    if(concertIds.value.length) {
         var removeButtons = document.getElementsByClassName('bc_remove_concert');
         for(var i = 0; i < removeButtons.length; ++i) {
             removeButtons[i].addEventListener("click", removeListener, false);

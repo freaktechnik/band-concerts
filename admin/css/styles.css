@@ -38,7 +38,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 }
 
 .bc_concert_row input {
-    float: right;
     width: 85%;
     margin-left: 1em;
 }
